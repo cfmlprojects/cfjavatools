@@ -1,0 +1,30 @@
+<project name="distro.build" default="build" basedir="./" xmlns:antcontrib="antlib:net.sf.antcontrib">
+
+	<loadproperties srcfile="build.properties"/>
+	<import file="${cfdistro.build.file}"/>
+
+	<target name="build" depends="cfdistro.build">
+		<dependency groupId="org.mxunit" artifactId="core" version="${mxunit.version}" mapping="/mxunit" />
+		<mapping physical="${src.dir}/cfml" virtual="/cfml"/>
+		<mapping physical="${basedir}/../tests" virtual="/tests"/>
+	</target>
+
+
+    <target name="build.mvn.deploy">
+        <property name="mvn.repo.dest" value="local" />
+        <property name="mvn.repo.dest" value="remote" />
+        <property name="mvn.repo.id" value="mvn.repo.${mvn.repo.dest}" />
+        <property name="maven.repo.local" location="${cfdistro.basedir}/artifacts" />
+        <mvn-repo id="mvn.repo.local" url="file://${maven.repo.local}/" />
+        <property name="mvn.type" value="release" />
+        <delete file="${dist.dir}/cfml.zip" />
+        <defaultexcludes remove="**/.gitignore"/>
+        <zip destfile="${dist.dir}/cfml.zip" update="false">
+        	<fileset dir="${src.dir}/cfml/javatools/" />
+        </zip>
+        <pom-and-deploy pomid="cfml.pom" packaging="zip" artifact="${dist.dir}/cfml.zip"
+         groupId="cfml" artifactId="javatools" version="1.0.0" name="javatools"/>
+    </target>
+
+	
+</project>
